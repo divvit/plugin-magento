@@ -1,0 +1,21 @@
+<?php
+/** @var Divvit_Divvit_Block_Cart $this */
+if(!Mage::helper("divvit_divvit")->isEnabled()) return;
+?>
+    divvit.cartUpdated({
+        cartId: "<?php echo $this->getQuote()->getId() ?>",
+
+        products: [
+            <?php $first = true;
+            /** @var Mage_Sales_Model_Quote_Item $item */
+            foreach($this->getQuote()->getAllVisibleItems() as $item): ?>
+            <?php if(!$first) { ?>,<?php } ?>
+            {
+                id: "<?php echo $item->getProduct()->getSku() ?>",
+                name: <?php echo json_encode($item->getProduct()->getName()) ?>,
+                price: "<?php echo $item->getPriceInclTax() ?>"
+            },
+            <?php $first = false;
+            endforeach; ?>
+        ]
+    });

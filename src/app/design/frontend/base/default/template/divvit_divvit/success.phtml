@@ -1,0 +1,46 @@
+<?php
+/** @var Divvit_Divvit_Block_Order $this */
+if(!Mage::helper("divvit_divvit")->isEnabled()) return;
+$discountAmount = $this->getLastOrder()->getDiscountAmount() * -1.0;
+?>
+<script type="text/javascript">
+//<![CDATA[
+    divvit.orderPlaced({
+        order: {
+            products: [
+                <?php $first = true;
+                /** @var Mage_Sales_Model_Order_Item $item */
+                foreach($this->getLastOrder()->getAllVisibleItems() as $item): ?>
+                <?php if(!$first) { ?>,<?php } ?>
+                {
+                    id: "<?php echo $item->getProduct()->getSku() ?>",
+                    name: <?php echo json_encode($item->getProduct()->getName()) ?>,
+                    price: "<?php echo $item->getPriceInclTax() ?>",
+                    currency: "<?php echo $this->getLastOrder()->getOrderCurrencyCode() ?>",
+                    quantity: "<?php echo $item->getQtyOrdered() ?>"
+                }
+                <?php $first = false;
+                endforeach; ?>
+            ],
+            orderId: "<?php echo $this->getLastOrder()->getIncrementId() ?>",
+            total: "<?php echo $this->getLastOrder()->getGrandTotal() + $discountAmount ?>",
+            currency: "<?php echo $this->getLastOrder()->getOrderCurrencyCode() ?>",
+            shipping: "<?php echo $this->getLastOrder()->getShippingAmount() ?>",
+            <?php if($discountAmount > 0.001): ?>
+            voucher: <?php echo json_encode($this->getLastOrder()->getCouponCode()) ?>,
+            voucherDiscount: "<?php echo $discountAmount ?>",
+            voucherType: "promo",
+            <?php endif; ?>
+            paymentMethod: "<?php echo $this->getLastOrder()->getPayment()->getMethod() ?>"
+            <?php if(Mage::getSingleton("customer/session")->isLoggedIn()): ?>
+            , customer: {
+                idFields: {
+                    id: "<?php echo Mage::getSingleton("customer/session")->getCustomerId() ?>"
+                },
+                name: <?php echo json_encode(Mage::getSingleton("customer/session")->getCustomer()->getName()) ?>
+            }
+            <?php endif; ?>
+        }
+    });
+//]]>
+</script>
