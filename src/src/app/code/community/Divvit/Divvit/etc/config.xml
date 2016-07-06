@@ -49,6 +49,15 @@
                     </divvit_divvit>
                 </observers>
             </sales_quote_add_item>
+            <sales_order_place_after>
+                <observers>
+                    <divvit_divvit>
+                        <type>singleton</type>
+                        <class>divvit_divvit/observer</class>
+                        <method>onSalesOrderPlaceAfter</method>
+                    </divvit_divvit>
+                </observers>
+            </sales_order_place_after>
         </events>
     </frontend>
     <default>
