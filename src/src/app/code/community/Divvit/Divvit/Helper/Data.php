@@ -46,9 +46,11 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
     protected function backgroundPost($url) {
         $parts = parse_url($url);
 
+        $isHttps = ($parts['scheme'] == 'https');
+
         $fp = fsockopen(
-            $parts['host'],
-            isset($parts['port']) ? $parts['port'] : 80,
+            ($isHttps ? 'ssl://' : '') . $parts['host'],
+            isset($parts['port']) ? $parts['port'] : ($isHttps ? 443 : 80),
             $errno,
             $errstr,
             30
@@ -115,9 +117,18 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
             $data["order"]["customer"] = [
                 "name" => Mage::getSingleton("customer/session")->getCustomer()->getName(),
                 "idFields" => [
-                    "id" => Mage::getSingleton("customer/session")->getCustomerId()
+                    "id" => Mage::getSingleton("customer/session")->getCustomerId(),
+                    "email" => Mage::getSingleton("customer/session")->getCustomer()->getEmail()
                 ]
             ];
+        } else {
+          // also store name and email for guest checkouts
+          $data["order"]["customer"] = [
+              "name" => $order->getCustomerName(),
+              "idFields" => [
+                  "email" => $order->getBillingAddress()->getEmail()
+              ]
+          ];
         }
 
         return json_encode($data);

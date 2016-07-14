@@ -1,5 +1,7 @@
 <?php
 /** @var Divvit_Divvit_Block_Order $this */
+// DIV-407: frontend tracking disabled
+return;
 if(!Mage::helper("divvit_divvit")->isEnabled()) return;
 $discountAmount = $this->getLastOrder()->getDiscountAmount() * -1.0;
 ?>
