@@ -3,6 +3,7 @@
 class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
     const XML_DIVVIT_MERCHANT_SITE_ID = "divvit/settings/merchant_site_id";
     const XML_DIVVIT_ENABLED = "divvit/settings/enabled";
+    const EVENT_QUEUE = "divvit_event_queue";
 
     /**
      * @return string
@@ -39,45 +40,6 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
         return (string)Mage::getConfig()->getNode()->modules->Divvit_Divvit->version;
     }
 
-    /**
-     * @param $url
-     * @return bool
-     */
-    protected function backgroundPost($url) {
-        $parts = parse_url($url);
-
-        $isHttps = ($parts['scheme'] == 'https');
-
-        $fp = fsockopen(
-            ($isHttps ? 'ssl://' : '') . $parts['host'],
-            isset($parts['port']) ? $parts['port'] : ($isHttps ? 443 : 80),
-            $errno,
-            $errstr,
-            30
-        );
-
-        if (!$fp) {
-            return false;
-        }
-
-        $body = $parts["query"];
-        $pos = strpos($body, "&m=");
-        $getParameters = substr($body, 0, $pos);
-        $body = trim(substr($body, $pos + 1));
-
-        $out = "POST " . $parts['path'] . "?" . $getParameters . " HTTP/1.1\r\n";
-        $out .= "Host: " . $parts['host'] . "\r\n";
-        $out .= "Content-Type: application/x-www-form-urlencoded\r\n";
-        $out .= "Content-Length: " . strlen($body) . "\r\n";
-        $out .= "Connection: Close\r\n\r\n";
-        $out .= $body;
-
-        Mage::log($out);
-
-        fwrite($fp, $out);
-        fclose($fp);
-        return true;
-    }
 
     /**
      * @param Mage_Sales_Model_Order $order
@@ -122,13 +84,13 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
                 ]
             ];
         } else {
-          // also store name and email for guest checkouts
-          $data["order"]["customer"] = [
-              "name" => $order->getCustomerName(),
-              "idFields" => [
-                  "email" => $order->getBillingAddress()->getEmail()
-              ]
-          ];
+            // also store name and email for guest checkouts
+            $data["order"]["customer"] = [
+                "name" => $order->getCustomerName(),
+                "idFields" => [
+                    "email" => $order->getBillingAddress()->getEmail()
+                ]
+            ];
         }
 
         return json_encode($data);
@@ -156,16 +118,23 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
         return json_encode($data);
     }
 
-    public function sendBackgroundRequest($type, $json) {
-        $url = "https://tracker.divvit.com/track.js";
-        $url .= "?i=" . $this->getMerchantSiteId();
-        $url .= "&e=" . $type;
-        $url .= "&v=magento-" . $this->getExtensionVersion();
-        $url .= "&uid=" . $_COOKIE["DV_TRACK"];
-        $url .= "&m=" . urlencode($json);
 
-        if (!$this->backgroundPost($url)) {
-            Mage::log("Couldn't perform background post request - Unable to load resource fsockopen", Zend_Log::WARN);
+    /**
+     * @param String $type
+     * @param String $json
+     */
+    public function queueEvent($type, $json)
+    {
+        $session = Mage::getSingleton('customer/session');
+        $queue = $session->getData(self::EVENT_QUEUE);
+        if (!is_array($queue)) {
+            $queue = [];
         }
+        // queue new event
+        $queue[] = [
+            "type" => $type,
+            "json" => $json
+        ];
+        $session->setData(self::EVENT_QUEUE, $queue);
     }
 }

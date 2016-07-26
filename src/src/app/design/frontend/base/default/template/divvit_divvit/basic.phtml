@@ -1,6 +1,8 @@
 <?php
 /** @var Mage_Core_Block_Template $this */
 if(!Mage::helper("divvit_divvit")->isEnabled()) return;
+$_session = Mage::getSingleton('customer/session');
+$_queue = $_session->getData(Divvit_Divvit_Helper_Data::EVENT_QUEUE);
 ?>
 <script type="text/javascript">
 //<![CDATA[
@@ -18,6 +20,14 @@ divvit.customer({
 <?php if($this->helper("divvit_divvit")->hasCartData()): ?>
 <?php echo $this->getChildHtml("divvit_cart") ?>
 <?php Mage::helper("divvit_divvit")->resetCartData() ?>
+<?php endif; ?>
+
+<?php /* Process Divvit Event Queue */ ?>
+<?php if (is_array($_queue) && !empty($_queue)): ?>
+<?php foreach ($_queue as $_event): ?>
+divvit.<?php echo $_event["type"] ?>(<?php echo $_event["json"] ?>);
+<?php endforeach; ?>
+<?php $_session->setData(Divvit_Divvit_Helper_Data::EVENT_QUEUE, []);?>
 <?php endif; ?>
 //]]>
 </script>
