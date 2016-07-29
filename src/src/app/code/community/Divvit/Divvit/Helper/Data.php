@@ -20,20 +20,6 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
     }
 
     /**
-     * @return bool
-     */
-    public function hasCartData() {
-        return Mage::getSingleton("customer/session")->hasData("divvit_update_cart");
-    }
-
-    /**
-     * @return void
-     */
-    public function resetCartData() {
-        Mage::getSingleton("customer/session")->unsetData("divvit_update_cart");
-    }
-
-    /**
      * @return string
      */
     public function getExtensionVersion() {
@@ -105,7 +91,6 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
             "cartId" => $quote->getId(),
             "products" => [],
         ];
-
         /** @var Mage_Sales_Model_Quote_Item $item */
         foreach ($quote->getAllVisibleItems() as $item) {
             $data["products"][] = [

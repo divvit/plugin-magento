@@ -17,11 +17,6 @@ divvit.customer({
 });
 <?php endif; ?>
 
-<?php if($this->helper("divvit_divvit")->hasCartData()): ?>
-<?php echo $this->getChildHtml("divvit_cart") ?>
-<?php Mage::helper("divvit_divvit")->resetCartData() ?>
-<?php endif; ?>
-
 <?php /* Process Divvit Event Queue */ ?>
 <?php if (is_array($_queue) && !empty($_queue)): ?>
 <?php foreach ($_queue as $_event): ?>

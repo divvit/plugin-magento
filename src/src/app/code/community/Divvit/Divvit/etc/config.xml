@@ -6,11 +6,6 @@
         </Divvit_Divvit>
     </modules>
     <global>
-        <blocks>
-            <divvit_divvit>
-                <class>Divvit_Divvit_Block</class>
-            </divvit_divvit>
-        </blocks>
         <helpers>
             <divvit_divvit>
                 <class>Divvit_Divvit_Helper</class>
@@ -31,6 +26,15 @@
             </updates>
         </layout>
         <events>
+            <checkout_cart_add_product_complete>
+                <observers>
+                    <divvit_divvit>
+                        <type>singleton</type>
+                        <class>divvit_divvit/observer</class>
+                        <method>setCartData</method>
+                    </divvit_divvit>
+                </observers>
+            </checkout_cart_add_product_complete>
             <sales_quote_remove_item>
                 <observers>
                     <divvit_divvit>
@@ -40,15 +44,15 @@
                     </divvit_divvit>
                 </observers>
             </sales_quote_remove_item>
-            <sales_quote_add_item>
+            <checkout_cart_save_before>
                 <observers>
                     <divvit_divvit>
                         <type>singleton</type>
                         <class>divvit_divvit/observer</class>
-                        <method>setCartData</method>
+                        <method>emptyCart</method>
                     </divvit_divvit>
                 </observers>
-            </sales_quote_add_item>
+            </checkout_cart_save_before>
             <sales_order_place_after>
                 <observers>
                     <divvit_divvit>

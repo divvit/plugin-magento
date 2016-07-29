@@ -2,19 +2,7 @@
 <layout version="0.1.0">
     <default>
         <reference name="head">
-            <block type="core/template" name="divvit" template="divvit_divvit/basic.phtml">
-                <block type="divvit_divvit/cart" name="divvit_cart" template="divvit_divvit/cart.phtml" />
-            </block>
+            <block type="core/template" name="divvit" template="divvit_divvit/basic.phtml" />
         </reference>
     </default>
-    <checkout_onepage_success>
-        <reference name="before_body_end">
-            <block type="divvit_divvit/order" name="divvit_order" template="divvit_divvit/success.phtml"/>
-        </reference>
-    </checkout_onepage_success>
-    <checkout_multishipping_success>
-        <reference name="before_body_end">
-            <block type="divvit_divvit/order" name="divvit_order" template="divvit_divvit/success.phtml"/>
-        </reference>
-    </checkout_multishipping_success>
 </layout>
