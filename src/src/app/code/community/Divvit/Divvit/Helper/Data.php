@@ -93,11 +93,16 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
         ];
         /** @var Mage_Sales_Model_Quote_Item $item */
         foreach ($quote->getAllVisibleItems() as $item) {
-            $data["products"][] = [
+            $itemData = [
                 "id" => $item->getProduct()->getSku(),
                 "name" => $item->getProduct()->getName(),
                 "price" => $item->getPriceInclTax(),
             ];
+            $itemQuantity = (int)$item->getQty();
+            if ($itemQuantity > 1) {
+                $itemData["quantity"] = $itemQuantity;
+            }
+            $data["products"][] = $itemData;
         }
 
         return json_encode($data);
