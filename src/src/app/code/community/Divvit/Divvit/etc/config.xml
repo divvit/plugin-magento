@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Divvit_Divvit>
-            <version>1.1.0</version>
+            <version>1.2.0</version>
         </Divvit_Divvit>
     </modules>
     <global>
@@ -14,8 +14,35 @@
         <models>
             <divvit_divvit>
                 <class>Divvit_Divvit_Model</class>
+                <resourceModel>divvit_divvit_resource</resourceModel>
             </divvit_divvit>
+            <divvit_divvit_resource>
+                <class>Divvit_Divvit_Model_Resource</class>
+                <entities>
+                    <order>
+                        <table>divvit_order</table>
+                    </order>
+                </entities>
+            </divvit_divvit_resource>
         </models>
+        <events>
+            <admin_system_config_changed_section_divvit>
+                <observers>
+                    <divvit_divvit>
+                        <type>singleton</type>
+                        <class>divvit_divvit/observer</class>
+                        <method>adminSystemConfigChangedSection</method>
+                    </divvit_divvit>
+                </observers>
+            </admin_system_config_changed_section_divvit>
+        </events>
+        <resources>
+            <divvit_setup>
+                <setup>
+                    <module>Divvit_Divvit</module>
+                </setup>
+            </divvit_setup>
+        </resources>
     </global>
     <frontend>
         <layout>
@@ -25,7 +52,25 @@
                 </divvit_divvit>
             </updates>
         </layout>
+        <routers>
+            <divvit>
+                <use>standard</use>
+                <args>
+                    <module>Divvit_Divvit</module>
+                    <frontName>divvit</frontName>
+                </args>
+            </divvit>
+        </routers>
         <events>
+            <customer_login>
+                <observers>
+                    <divvit_divvit>
+                        <type>singleton</type>
+                        <class>divvit_divvit/observer</class>
+                        <method>customerLogin</method>
+                    </divvit_divvit>
+                </observers>
+            </customer_login>
             <checkout_cart_add_product_complete>
                 <observers>
                     <divvit_divvit>
@@ -69,6 +114,7 @@
             <settings>
                 <enabled>0</enabled>
                 <merchant_site_id></merchant_site_id>
+                <access_token></access_token>
             </settings>
         </divvit>
     </default>

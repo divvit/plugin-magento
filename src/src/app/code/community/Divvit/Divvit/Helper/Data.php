@@ -3,6 +3,7 @@
 class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
     const XML_DIVVIT_MERCHANT_SITE_ID = "divvit/settings/merchant_site_id";
     const XML_DIVVIT_ENABLED = "divvit/settings/enabled";
+    const XML_DIVVIT_ACCESS_TOKEN = "divvit/settings/access_token";
     const EVENT_QUEUE = "divvit_event_queue";
 
     /**
@@ -25,6 +26,11 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
     public function getExtensionVersion() {
         return (string)Mage::getConfig()->getNode()->modules->Divvit_Divvit->version;
     }
+
+	public function getAccessToken()
+	{
+		return (string) Mage::getStoreConfig(self::XML_DIVVIT_ACCESS_TOKEN);
+	}
 
 
     /**
@@ -109,6 +115,8 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
     }
 
 
+
+
     /**
      * @param String $type
      * @param String $json
@@ -127,4 +135,19 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
         ];
         $session->setData(self::EVENT_QUEUE, $queue);
     }
+
+    public function getUID()
+	{
+		if ($this->isEnabled()){
+			return Mage::getSingleton('customer/session')->getCookie()->get('DV_TRACK');
+		}
+
+		return false;
+
+	}
+
+	public function setAccessToken($token)
+	{
+		Mage::getConfig()->saveConfig(self::XML_DIVVIT_ACCESS_TOKEN,$token);
+	}
 }
