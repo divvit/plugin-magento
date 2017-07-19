@@ -43,7 +43,8 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
             [
                 "products" => [],
                 "orderId" => $order->getIncrementId(),
-                "total" => $order->getGrandTotal() + $discountAmount,
+                "total" => $order->getGrandTotal() + $discountAmount - $order->getShippingAmount(),
+                "totalProductsNet" => $order->getGrandTotal(),
                 "currency" => $order->getOrderCurrencyCode(),
                 "shipping" => $order->getShippingAmount(),
                 "paymentMethod" => $order->getPayment()->getMethod(),
