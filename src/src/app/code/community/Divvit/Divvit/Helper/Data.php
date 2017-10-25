@@ -32,28 +32,39 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
 		return (string) Mage::getStoreConfig(self::XML_DIVVIT_ACCESS_TOKEN);
 	}
 
+    /**
+     * @param Mage_Sales_Model_Order $order
+     * @return array
+     */
+    public function getCustomerOrderDataJson($order) {
+        $customerId = 0;
+
+        //Check if customer is guest
+        if ($order->getCustomerId() != '' || !empty($order->getCustomerId())) {
+            $customerId = $order->getCustomerId();
+        }
+
+        $data = [
+            "name" => $order->getCustomerName(),
+            "id" => $customerId,
+            "idFields" => [
+                "email" => $order->getBillingAddress()->getEmail()
+            ]
+        ];
+        return $data;
+    }
+
 
     /**
      * @param Mage_Sales_Model_Order $order
-     * @return string
+     * @return array
      */
     public function getOrderDataJson($order) {
         $discountAmount = $order->getDiscountAmount() * -1.0;
-        $data = ["order" =>
-            [
-                "products" => [],
-                "orderId" => $order->getIncrementId(),
-                "total" => $order->getGrandTotal() + $discountAmount - $order->getShippingAmount(),
-                "totalProductsNet" => $order->getGrandTotal(),
-                "currency" => $order->getOrderCurrencyCode(),
-                "shipping" => $order->getShippingAmount(),
-                "paymentMethod" => $order->getPayment()->getMethod(),
-            ]
-        ];
 
         /** @var Mage_Sales_Model_Order_Item $item */
         foreach ($order->getAllVisibleItems() as $item) {
-            $data["order"]["products"][] = [
+            $data[] = [
                 "id" => $item->getProduct()->getSku(),
                 "name" => $item->getProduct()->getName(),
                 "price" => $item->getPriceInclTax(),
@@ -61,32 +72,7 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
                 "quantity" => $item->getQtyOrdered(),
             ];
         }
-
-        if ($discountAmount > 0.001) {
-            $data["order"]["voucher"] = $order->getCouponCode();
-            $data["order"]["voucherDiscount"] = $discountAmount;
-            $data["order"]["voucherType"] = "promo";
-        }
-
-        if (Mage::getSingleton("customer/session")->isLoggedIn()) {
-            $data["order"]["customer"] = [
-                "name" => Mage::getSingleton("customer/session")->getCustomer()->getName(),
-                "idFields" => [
-                    "id" => Mage::getSingleton("customer/session")->getCustomerId(),
-                    "email" => Mage::getSingleton("customer/session")->getCustomer()->getEmail()
-                ]
-            ];
-        } else {
-            // also store name and email for guest checkouts
-            $data["order"]["customer"] = [
-                "name" => $order->getCustomerName(),
-                "idFields" => [
-                    "email" => $order->getBillingAddress()->getEmail()
-                ]
-            ];
-        }
-
-        return json_encode($data);
+        return $data;
     }
 
     /**
@@ -114,9 +100,6 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
 
         return json_encode($data);
     }
-
-
-
 
     /**
      * @param String $type
