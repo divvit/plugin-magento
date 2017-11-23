@@ -67,9 +67,9 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
             $data[] = [
                 "id" => $item->getProduct()->getSku(),
                 "name" => $item->getProduct()->getName(),
-                "price" => $item->getPriceInclTax(),
+                "price" => (float)$item->getPriceInclTax(),
                 "currency" => $order->getOrderCurrencyCode(),
-                "quantity" => $item->getQtyOrdered(),
+                "quantity" => (int)$item->getQtyOrdered(),
             ];
         }
         return $data;
@@ -89,7 +89,7 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
             $itemData = [
                 "id" => $item->getProduct()->getSku(),
                 "name" => $item->getProduct()->getName(),
-                "price" => $item->getPriceInclTax(),
+                "price" => (float)$item->getPriceInclTax(),
             ];
             $itemQuantity = (int)$item->getQty();
             if ($itemQuantity > 1) {
