@@ -7,17 +7,15 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
 		{
 			/* @var $helper Divvit_Divvit_Helper_Data */
 			$helper = Mage::helper('divvit_divvit');
-
 			$correctToken = "token ".$helper->getAccessToken();
-			$token = $this->getRequest()->getHeader('Authorization');
-
+			$token = "token ".$helper->generateAccessToken();
+			
+			$this->getResponse()->setHeader('Content-type', 'application/json');
 			$jsonContent = [];
 			if ($token != $correctToken)
 			{
 				$this->getResponse()->setHttpResponseCode(401);
-				$this->getResponse()->setHeader('Content-type', 'application/json');
-				echo "Unauthorized";
-				$this->getResponse()->sendResponse();
+				$this->getResponse()->setBody(json_encode(array('error' => "Unauthorized")));
 				return false;
 			}
 
@@ -29,10 +27,10 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
 
 			if ($fromOrderId)
 			{
-				$fromOrder = Mage::getModel('sales/order')->loadByIncrementId($fromOrderId);
+				$fromOrder = Mage::getModel('sales/order')->load($fromOrderId);
 				if (!$fromOrder->getId())
 				{
-					echo "Your Order ID is not found";
+					$this->getResponse()->setBody(json_encode(array('error' => "Your Order ID is not found")));
 					return false;
 				}
 				$orderCollection->addAttributeToFilter('created_at',['gt' => $fromOrder->getCreatedAt()]);
@@ -52,15 +50,15 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
 				$orderJson['uid'] = $_order->getUid();
 				$orderJson['createdAt'] = date('Y-m-d H:i:s',strtotime($order->getCreatedAt()));
 				$orderJson['orderId'] = $_order->getId();
-				$orderJson['total'] = $_order->getGrandTotal();
+				$orderJson['total'] = (float)$_order->getGrandTotal();
 				$orderJson['totalProductsNet'] = $_order->getGrandTotal() - $_order->getDiscountAmount();
-				$orderJson['shipping'] = $_order->getShippingAmount();
-				$orderJson['currency'] = $_order->getCurrentCurrencyCode();
+				$orderJson['shipping'] = (float)$_order->getShippingAmount();
+				$orderJson['currency'] = $_order->getOrderCurrencyCode();
 				$orderJson['customer'] = $helper->getCustomerOrderDataJson($order);
 				$orderJson['products'] = $helper->getOrderDataJson($order);
 				$jsonContent[] = $orderJson;
 			}
-			
-			echo json_encode($jsonContent);
+
+			$this->getResponse()->setBody(json_encode($jsonContent));
 		}
 }

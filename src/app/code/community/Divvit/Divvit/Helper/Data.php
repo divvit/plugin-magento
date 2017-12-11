@@ -67,9 +67,9 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
             $data[] = [
                 "id" => $item->getProduct()->getSku(),
                 "name" => $item->getProduct()->getName(),
-                "price" => $item->getPriceInclTax(),
+                "price" => (float)$item->getPriceInclTax(),
                 "currency" => $order->getOrderCurrencyCode(),
-                "quantity" => $item->getQtyOrdered(),
+                "quantity" => (int)$item->getQtyOrdered(),
             ];
         }
         return $data;
@@ -89,7 +89,7 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
             $itemData = [
                 "id" => $item->getProduct()->getSku(),
                 "name" => $item->getProduct()->getName(),
-                "price" => $item->getPriceInclTax(),
+                "price" => (float)$item->getPriceInclTax(),
             ];
             $itemQuantity = (int)$item->getQty();
             if ($itemQuantity > 1) {
@@ -134,4 +134,43 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
 	{
 		Mage::getConfig()->saveConfig(self::XML_DIVVIT_ACCESS_TOKEN,$token);
 	}
+
+    public function generateAccessToken()
+    {
+
+        $httpClient = new Zend_Http_Client($this->getDivvitUrl('tracker')."/auth/register");
+        $httpClient->setHeaders('Content-type','application/json');
+
+        $url = str_replace('index.php/', '', Mage::getUrl('divvit/index/order'));
+
+        $data = ['frontendId' => $this->getMerchantSiteId(),'url' => $url];
+
+        $httpClient->setRawData(json_encode($data));
+        $requestResult = $httpClient->request("POST");
+
+        $result = json_decode($requestResult->getBody());
+
+        return $result->accessToken;
+    }
+
+    /**
+     * Get corresponding divvit tag/tracker url
+     * @access   public
+     */
+    public function getDivvitUrl($type = '')
+    {
+        if ($type == 'tag') {
+            if (getenv('DIVVIT_TAG_URL') != '') {
+                return getenv('DIVVIT_TAG_URL');
+            } else {
+                return 'https://tag.divvit.com';
+            }
+        } else {
+            if (getenv('DIVVIT_TRACKING_URL') != '') {
+                return getenv('DIVVIT_TRACKING_URL');
+            } else {
+                return 'https://tracker.divvit.com';
+            }
+        }
+    }
 }

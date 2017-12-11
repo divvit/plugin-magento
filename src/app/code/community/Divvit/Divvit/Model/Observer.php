@@ -92,19 +92,7 @@ class Divvit_Divvit_Model_Observer
 	{
 		/* @var $helper Divvit_Divvit_Helper_Data */
 		$helper = Mage::helper('divvit_divvit');
-
-		$httpClient = new Zend_Http_Client("https://tracker.divvit.com/auth/register");
-		$httpClient->setHeaders('Content-type','application/json');
-
-		$data = ['frontendId' => $helper->getMerchantSiteId(),'url' => Mage::getUrl('divvit/index/order')];
-
-		$httpClient->setRawData(json_encode($data));
-		$requestResult = $httpClient->request("POST");
-
-		$result = json_decode($requestResult->getBody());
-		$accessToken = $result->accessToken;
-
+		$accessToken = $helper->generateAccessToken();
 		$helper->setAccessToken($accessToken);
-
 	}
 }
