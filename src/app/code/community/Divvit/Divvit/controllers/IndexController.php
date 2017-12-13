@@ -12,6 +12,7 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
 
 			$correctToken = "token ".$helper->getAccessToken();
 			$token = $this->getRequest()->getHeader('Authorization');
+			$this->getResponse()->setHeader('Content-type', 'application/json');
 
 			$this->getResponse()->setHeader('Content-type', 'application/json');
 			$jsonContent = [];
