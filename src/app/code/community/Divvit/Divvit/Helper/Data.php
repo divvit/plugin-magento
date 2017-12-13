@@ -141,9 +141,7 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
         $httpClient = new Zend_Http_Client($this->getDivvitUrl('tracker')."/auth/register");
         $httpClient->setHeaders('Content-type','application/json');
 
-        $url = str_replace('index.php/', '', Mage::getUrl('divvit/index/order'));
-
-        $data = ['frontendId' => $this->getMerchantSiteId(),'url' => $url];
+        $data = ['frontendId' => $this->getMerchantSiteId(),'url' => Mage::getUrl('divvit/index/order')];
 
         $httpClient->setRawData(json_encode($data));
         $requestResult = $httpClient->request("POST");
