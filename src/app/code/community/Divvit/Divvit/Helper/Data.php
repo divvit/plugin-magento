@@ -173,4 +173,13 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
             }
         }
     }
+
+    public function clearCacheConfig()
+    {
+        $caches=array('config','config_api','config_api2');
+        foreach($caches as $cache) {
+            $c = Mage::app()->getCacheInstance()->cleanType($cache);
+            Mage::dispatchEvent('adminhtml_cache_refresh_type', array('type' => $cache));
+        }
+    }
 }

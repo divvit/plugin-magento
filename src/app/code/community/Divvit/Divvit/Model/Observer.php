@@ -92,6 +92,7 @@ class Divvit_Divvit_Model_Observer
 	{
 		/* @var $helper Divvit_Divvit_Helper_Data */
 		$helper = Mage::helper('divvit_divvit');
+        $helper->clearCacheConfig();
 		$accessToken = $helper->generateAccessToken();
 		$helper->setAccessToken($accessToken);
 	}

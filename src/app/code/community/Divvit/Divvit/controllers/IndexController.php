@@ -7,9 +7,12 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
 		{
 			/* @var $helper Divvit_Divvit_Helper_Data */
 			$helper = Mage::helper('divvit_divvit');
+
+			$helper->clearCacheConfig();
+
 			$correctToken = "token ".$helper->getAccessToken();
-			$token = "token ".$helper->generateAccessToken();
-			
+			$token = $this->getRequest()->getHeader('Authorization');
+
 			$this->getResponse()->setHeader('Content-type', 'application/json');
 			$jsonContent = [];
 			if ($token != $correctToken)
