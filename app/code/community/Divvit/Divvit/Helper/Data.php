@@ -27,10 +27,10 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
         return (string)Mage::getConfig()->getNode()->modules->Divvit_Divvit->version;
     }
 
-	public function getAccessToken()
-	{
-		return (string) Mage::getStoreConfig(self::XML_DIVVIT_ACCESS_TOKEN);
-	}
+    public function getAccessToken()
+    {
+        return (string) Mage::getStoreConfig(self::XML_DIVVIT_ACCESS_TOKEN);
+    }
 
     /**
      * @param Mage_Sales_Model_Order $order
@@ -121,19 +121,19 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
     }
 
     public function getUID()
-	{
-		if ($this->isEnabled()){
-			return Mage::getSingleton('customer/session')->getCookie()->get('DV_TRACK');
-		}
+    {
+        if ($this->isEnabled()){
+            return Mage::getSingleton('customer/session')->getCookie()->get('DV_TRACK');
+        }
 
-		return false;
+        return false;
 
-	}
+    }
 
-	public function setAccessToken($token)
-	{
-		Mage::getConfig()->saveConfig(self::XML_DIVVIT_ACCESS_TOKEN,$token);
-	}
+    public function setAccessToken($token)
+    {
+        Mage::getConfig()->saveConfig(self::XML_DIVVIT_ACCESS_TOKEN,$token);
+    }
 
     public function generateAccessToken()
     {
