@@ -29,7 +29,7 @@ class Divvit_Divvit_Model_Observer
 	 * @return bool
      */
     public function emptyCart($observer)
-    {
+    {   
         $post = Mage::app()->getRequest()->getPost('update_cart_action');
         if ($post == 'empty_cart') {
             self::setCartData($observer);
@@ -43,12 +43,15 @@ class Divvit_Divvit_Model_Observer
      */
     public function onSalesOrderPlaceAfter($observer)
     {
-
-
     	/* @var $helper Divvit_Divvit_Helper_Data */
         $helper = Mage::helper('divvit_divvit');
 
         if ($helper->isEnabled()) {
+
+            $orderTable = $helper->tableChecker();
+            if(empty($orderTable) || $orderTable === NULL) {
+                $helper->installDivvitTable();
+            }
 
         	/* @var Mage_Sales_Model_Order $order */
             $order = $observer->getOrder();
@@ -61,6 +64,7 @@ class Divvit_Divvit_Model_Observer
             $json = $helper->getOrderDataJson($order);
             $helper->queueEvent(self::ACTION_ORDER_PLACED, $json);
         }
+
         return true;
     }
 
