@@ -7,7 +7,7 @@ $_queue = $_session->getData(Divvit_Divvit_Helper_Data::EVENT_QUEUE);
 <!-- Divvit -->
 <script type="text/javascript">
 //<![CDATA[
-!function(){var t=window.divvit=window.divvit||[];t.DV_VERSION="magento-1.2.0",t.init=function(t){var e=document.createElement("script");e.setAttribute("type","text/javascript"),e.setAttribute("async",!0),e.setAttribute("src","<?php echo Mage::helper('divvit_divvit')->getDivvitUrl('tag') ?>/tag.js?id="+t);var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(e,r)},t.functions=["customer","pageview","cartAdd","cartRemove","cartUpdated","orderPlaced","nlSubscribed","dv"];for(var e=0;e<t.functions.length;e++){var r=t.functions[e];t[r]=function(e){return function(){return Array.prototype.unshift.call(arguments,e),t.push(arguments),t}}(r)}}();
+!function(){var t=window.divvit=window.divvit||[];t.DV_VERSION="magento-<?php echo Mage::helper('divvit_divvit')->getExtensionVersion() ?>",t.init=function(t){var e=document.createElement("script");e.setAttribute("type","text/javascript"),e.setAttribute("async",!0),e.setAttribute("src","<?php echo Mage::helper('divvit_divvit')->getDivvitUrl('tag') ?>/tag.js?id="+t);var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(e,r)},t.functions=["customer","pageview","cartAdd","cartRemove","cartUpdated","orderPlaced","nlSubscribed","dv"];for(var e=0;e<t.functions.length;e++){var r=t.functions[e];t[r]=function(e){return function(){return Array.prototype.unshift.call(arguments,e),t.push(arguments),t}}(r)}}();
 
 divvit.init('<?php echo Mage::helper("divvit_divvit")->getMerchantSiteId() ?>');
 divvit.pageview();
