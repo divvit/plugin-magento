@@ -19,7 +19,6 @@ class Divvit_Divvit_Model_Observer
             $quote = Mage::getSingleton('checkout/session')->getQuote();
             $json = $helper->getQuoteDataJson($quote);
             $helper->queueEvent(self::ACTION_CART_UPDATE, $json);
-
         }
         return true;
     }
@@ -43,11 +42,13 @@ class Divvit_Divvit_Model_Observer
      */
     public function onSalesOrderPlaceAfter($observer)
     {
-        /* @var $helper Divvit_Divvit_Helper_Data */
+
+    	/* @var $helper Divvit_Divvit_Helper_Data */
         $helper = Mage::helper('divvit_divvit');
 
-        if ($helper->isEnabled()) {
-            /* @var Mage_Sales_Model_Order $order */
+        if ($helper->isEnabled() && $helper->tableChecker()) {
+
+        	/* @var Mage_Sales_Model_Order $order */
             $order = $observer->getOrder();
 
             $divvit_order = Mage::getModel('divvit_divvit/order');

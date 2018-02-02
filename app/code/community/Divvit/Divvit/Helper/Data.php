@@ -9,21 +9,24 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
     /**
      * @return string
      */
-    public function getMerchantSiteId() {
+    public function getMerchantSiteId()
+    {
         return Mage::getStoreConfig(self::XML_DIVVIT_MERCHANT_SITE_ID);
     }
 
     /**
      * @return bool
      */
-    public function isEnabled() {
+    public function isEnabled()
+    {
         return (bool)Mage::getStoreConfig(self::XML_DIVVIT_ENABLED);
     }
 
     /**
      * @return string
      */
-    public function getExtensionVersion() {
+    public function getExtensionVersion()
+    {
         return (string)Mage::getConfig()->getNode()->modules->Divvit_Divvit->version;
     }
 
@@ -36,7 +39,8 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
      * @param Mage_Sales_Model_Order $order
      * @return array
      */
-    public function getCustomerOrderDataJson($order) {
+    public function getCustomerOrderDataJson($order)
+    {
         $customerId = 0;
 
         //Check if customer is guest
@@ -59,7 +63,8 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
      * @param Mage_Sales_Model_Order $order
      * @return array
      */
-    public function getOrderDataJson($order) {
+    public function getOrderDataJson($order)
+    {
         $discountAmount = $order->getDiscountAmount() * -1.0;
 
         /** @var Mage_Sales_Model_Order_Item $item */
@@ -79,7 +84,8 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
      * @param Mage_Sales_Model_Quote $quote
      * @return string
      */
-    public function getQuoteDataJson($quote) {
+    public function getQuoteDataJson($quote)
+    {
         $data = [
             "cartId" => $quote->getId(),
             "products" => [],
@@ -137,7 +143,6 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
 
     public function generateAccessToken()
     {
-
         $httpClient = new Zend_Http_Client($this->getDivvitUrl('tracker')."/auth/register");
         $httpClient->setHeaders('Content-type','application/json');
 
@@ -149,6 +154,12 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
         $result = json_decode($requestResult->getBody());
 
         return $result->accessToken;
+    }
+
+    public function tableChecker()
+    {
+        $installer = new Mage_Core_Model_Resource_Setup('Divvit_Divvit_setup');
+        return $installer->tableExists('divvit_divvit/order');
     }
 
     /**

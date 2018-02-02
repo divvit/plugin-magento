@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Divvit_Divvit>
-            <version>1.2.1</version>
+            <version>1.3.2</version>
         </Divvit_Divvit>
     </modules>
     <global>
@@ -11,6 +11,11 @@
                 <class>Divvit_Divvit_Helper</class>
             </divvit_divvit>
         </helpers>
+        <blocks>
+            <divvit_divvit>
+                <class>Divvit_Divvit_Block</class>
+            </divvit_divvit>
+        </blocks>
         <models>
             <divvit_divvit>
                 <class>Divvit_Divvit_Model</class>
