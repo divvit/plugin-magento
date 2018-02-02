@@ -2,14 +2,14 @@
 
 class Divvit_Divvit_Model_Observer
 {
-	const ACTION_CUSTOMER = 'customer';
-	const ACTION_ORDER_PLACED = 'orderPlaced';
-	const ACTION_PAGEVIEW = 'pageview';
-	const ACTION_CART_UPDATE = 'cartAdd';
+    const ACTION_CUSTOMER = 'customer';
+    const ACTION_ORDER_PLACED = 'orderPlaced';
+    const ACTION_PAGEVIEW = 'pageview';
+    const ACTION_CART_UPDATE = 'cartAdd';
 
     /**
      * @param Varien_Event_Observer $observer
-	 * @return bool
+     * @return bool
      */
     public function setCartData($observer)
     {
@@ -25,7 +25,7 @@ class Divvit_Divvit_Model_Observer
 
     /**
      * @param Varien_Event_Observer $observer
-	 * @return bool
+     * @return bool
      */
     public function emptyCart($observer)
     {
@@ -38,7 +38,7 @@ class Divvit_Divvit_Model_Observer
 
     /**
      * @param Varien_Event_Observer $observer
-	 * @return bool
+     * @return bool
      */
     public function onSalesOrderPlaceAfter($observer)
     {
@@ -62,36 +62,36 @@ class Divvit_Divvit_Model_Observer
         return true;
     }
 
-	/**
-	 * Add customer login to the send log queued, this action can be related to persistant cart update.
-	 * @param Varien_Event_Observer $observer
-	 * @return bool
-	 */
+    /**
+     * Add customer login to the send log queued, this action can be related to persistant cart update.
+     * @param Varien_Event_Observer $observer
+     * @return bool
+     */
     public function customerLogin($observer)
-	{
-		$helper = Mage::helper('divvit_divvit');
-		if ($helper->isEnabled())
-		{
-			/* @var Mage_Customer_Model_Customer $customer */
-			$customer = $observer->getData('customer');
-			$json = [];
-			$json['email'] = $customer->getEmail();
-			$json['customerId'] = $customer->getId();
-			
-			$helper->queueEvent(self::ACTION_CUSTOMER, $json);
-		}
-		return true;
-	}
+    {
+        $helper = Mage::helper('divvit_divvit');
+        if ($helper->isEnabled())
+        {
+            /* @var Mage_Customer_Model_Customer $customer */
+            $customer = $observer->getData('customer');
+            $json = [];
+            $json['email'] = $customer->getEmail();
+            $json['customerId'] = $customer->getId();
+
+            $helper->queueEvent(self::ACTION_CUSTOMER, $json);
+        }
+        return true;
+    }
 
     /**
-	 * @param $observer
-	 */
-	public function adminSystemConfigChangedSection($observer)
-	{
-		/* @var $helper Divvit_Divvit_Helper_Data */
-		$helper = Mage::helper('divvit_divvit');
+     * @param $observer
+     */
+    public function adminSystemConfigChangedSection($observer)
+    {
+        /* @var $helper Divvit_Divvit_Helper_Data */
+        $helper = Mage::helper('divvit_divvit');
         $helper->clearCacheConfig();
-		$accessToken = $helper->generateAccessToken();
-		$helper->setAccessToken($accessToken);
-	}
+        $accessToken = $helper->generateAccessToken();
+        $helper->setAccessToken($accessToken);
+    }
 }
