@@ -16,11 +16,16 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
             return false;
         }
 
-        $correctToken = "token ".$helper->getAccessToken();
-        $token = $this->getRequest()->getHeader('Authorization');
+        $correctToken = $helper->getAccessToken();
+        if (empty($correctToken))
+        {
+            $correctToken = $helper->generateAccessToken();
+            $helper->setAccessToken($correctToken);
+        }
+        $requestToken = $this->getRequest()->getHeader('Authorization');
 
         $jsonContent = [];
-        if ($token != $correctToken)
+        if ($requestToken != "token ".$correctToken)
         {
             $this->getResponse()->setHttpResponseCode(401);
             $this->getResponse()->setBody(json_encode(array('error' => "Unauthorized")));
@@ -35,7 +40,7 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
 
         if ($fromOrderId)
         {
-            $fromOrder = Mage::getModel('sales/order')->load($fromOrderId);
+            $fromOrder = Mage::getModel('sales/order')->loadByIncrementId($fromOrderId);
             if (!$fromOrder->getId())
             {
                 $this->getResponse()->setBody(json_encode(array('error' => "Your Order ID is not found")));
@@ -49,21 +54,13 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
         $orderCollection->getSelect()->join($divvitOrderTable, "main_table.increment_id = ".$divvitOrderTable.".order_id");
         $orderCollection->load();
 
-
         foreach ($orderCollection as $_order)
         {
             /* @var $order Mage_Sales_Model_Order */
             $order = Mage::getModel('sales/order')->load($_order->getId());
-            $orderJson = [];
+            $orderJson = $helper->getOrderDataJson($order)['order'];
             $orderJson['uid'] = $_order->getUid();
-            $orderJson['createdAt'] = date('Y-m-d H:i:s',strtotime($order->getCreatedAt()));
-            $orderJson['orderId'] = $_order->getId();
-            $orderJson['total'] = (float)$_order->getGrandTotal();
-            $orderJson['totalProductsNet'] = $_order->getGrandTotal() - $_order->getDiscountAmount();
-            $orderJson['shipping'] = (float)$_order->getShippingAmount();
-            $orderJson['currency'] = $_order->getOrderCurrencyCode();
-            $orderJson['customer'] = $helper->getCustomerOrderDataJson($order);
-            $orderJson['products'] = $helper->getOrderDataJson($order);
+            $orderJson['createdAt'] = date('Y-m-d H:i:s', strtotime($order->getCreatedAt()));
             $jsonContent[] = $orderJson;
         }
 
