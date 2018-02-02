@@ -57,7 +57,7 @@ class Divvit_Divvit_Model_Observer
             $divvit_order->save();
 
             $json = $helper->getOrderDataJson($order);
-            $helper->queueEvent(self::ACTION_ORDER_PLACED, $json);
+            $helper->queueEvent(self::ACTION_ORDER_PLACED, json_encode($json));
         }
         return true;
     }

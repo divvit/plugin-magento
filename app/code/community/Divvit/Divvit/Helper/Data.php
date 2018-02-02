@@ -66,17 +66,41 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
     public function getOrderDataJson($order)
     {
         $discountAmount = $order->getDiscountAmount() * -1.0;
+        $data = ["order" => [
+            "products" => [],
+            "orderId" => (string)$order->getIncrementId(),
+            "total" => (float)$order->getGrandTotal(),
+            "totalProductsNet" => $order->getGrandTotal() - $order->getShippingAmount() + $discountAmount,
+            "currency" => (string)$order->getOrderCurrencyCode(),
+            "shipping" => (float)$order->getShippingAmount(),
+            "paymentMethod" => (string)$order->getPayment()->getMethod(),
+        ]];
 
         /** @var Mage_Sales_Model_Order_Item $item */
         foreach ($order->getAllVisibleItems() as $item) {
-            $data[] = [
-                "id" => $item->getProduct()->getSku(),
-                "name" => $item->getProduct()->getName(),
+            $data["order"]["products"][] = [
+                "id" => (string)$item->getProduct()->getSku(),
+                "name" => (string)$item->getProduct()->getName(),
                 "price" => (float)$item->getPriceInclTax(),
-                "currency" => $order->getOrderCurrencyCode(),
+                "currency" => (string)$order->getOrderCurrencyCode(),
                 "quantity" => (int)$item->getQtyOrdered(),
             ];
         }
+
+        if ($discountAmount > 0.001) {
+            $data["order"]["voucher"] = (string)$order->getCouponCode();
+            $data["order"]["voucherDiscount"] = (float)$discountAmount;
+            $data["order"]["voucherType"] = "promo";
+        }
+
+        // also store name and email for guest checkouts
+        $data["order"]["customer"] = [
+            "name" => (string)$order->getCustomerName(),
+            "idFields" => [
+                "email" => (string)$order->getBillingAddress()->getEmail()
+            ]
+        ];
+
         return $data;
     }
 
@@ -146,7 +170,10 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
         $httpClient = new Zend_Http_Client($this->getDivvitUrl('tracker')."/auth/register");
         $httpClient->setHeaders('Content-type','application/json');
 
-        $data = ['frontendId' => $this->getMerchantSiteId(),'url' => Mage::getUrl('divvit/index/order')];
+        $data = [
+            'frontendId' => $this->getMerchantSiteId(),
+            'url' => Mage::getUrl('divvit/index/order', array('_type' => 'web'))
+        ];
 
         $httpClient->setRawData(json_encode($data));
         $requestResult = $httpClient->request("POST");
