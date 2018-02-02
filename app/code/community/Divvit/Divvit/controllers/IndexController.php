@@ -17,14 +17,19 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
         }
 
         $correctToken = "token ".$helper->getAccessToken();
-        $token = "token ".$helper->generateAccessToken();
+        $requestToken = $this->getRequest()->getHeader('Authorization');
+        $token = "token ".$requestToken;
 
         $jsonContent = [];
         if ($token != $correctToken)
         {
-            $this->getResponse()->setHttpResponseCode(401);
-            $this->getResponse()->setBody(json_encode(array('error' => "Unauthorized")));
-            return false;
+        	if (empty($requestToken)) {
+        		$this->getResponse()->setHttpResponseCode(401);
+        		$this->getResponse()->setBody(json_encode(array('error' => "Unauthorized")));
+        		return false;
+        	} else {
+        		$helper->setAccessToken($requestToken);
+        	}
         }
 
         /* @var $fromOrder Mage_Sales_Model_Order */
