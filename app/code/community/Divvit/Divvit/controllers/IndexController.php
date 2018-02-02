@@ -16,20 +16,20 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
             return false;
         }
 
-        $correctToken = "token ".$helper->getAccessToken();
+        $correctToken = $helper->getAccessToken();
+        if (empty($correctToken))
+        {
+            $correctToken = $helper->generateAccessToken();
+            $helper->setAccessToken($correctToken);
+        }
         $requestToken = $this->getRequest()->getHeader('Authorization');
-        $token = "token ".$requestToken;
 
         $jsonContent = [];
-        if ($token != $correctToken)
+        if ($requestToken != "token ".$correctToken)
         {
-        	if (empty($requestToken)) {
-        		$this->getResponse()->setHttpResponseCode(401);
-        		$this->getResponse()->setBody(json_encode(array('error' => "Unauthorized")));
-        		return false;
-        	} else {
-        		$helper->setAccessToken($requestToken);
-        	}
+            $this->getResponse()->setHttpResponseCode(401);
+            $this->getResponse()->setBody(json_encode(array('error' => "Unauthorized")));
+            return false;
         }
 
         /* @var $fromOrder Mage_Sales_Model_Order */
@@ -53,7 +53,6 @@ class Divvit_Divvit_IndexController extends Mage_Core_Controller_Front_Action
 
         $orderCollection->getSelect()->join($divvitOrderTable, "main_table.increment_id = ".$divvitOrderTable.".order_id");
         $orderCollection->load();
-
 
         foreach ($orderCollection as $_order)
         {
