@@ -151,6 +151,11 @@ class Divvit_Divvit_Helper_Data extends Mage_Core_Helper_Abstract {
         return $result->accessToken;
     }
 
+    public function tableChecker() {
+        $installer = new Mage_Core_Model_Resource_Setup('Divvit_Divvit_setup');
+        return $installer->tableExists('divvit_divvit/order');
+    }
+
     /**
      * Get corresponding divvit tag/tracker url
      * @access   public

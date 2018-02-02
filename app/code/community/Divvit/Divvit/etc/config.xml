@@ -11,6 +11,11 @@
                 <class>Divvit_Divvit_Helper</class>
             </divvit_divvit>
         </helpers>
+        <blocks>
+            <divvit_divvit>
+                <class>Divvit_Divvit_Block</class>
+            </divvit_divvit>
+        </blocks>
         <models>
             <divvit_divvit>
                 <class>Divvit_Divvit_Model</class>
