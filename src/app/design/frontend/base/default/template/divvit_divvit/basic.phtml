@@ -1,0 +1,29 @@
+<?php
+/** @var Mage_Core_Block_Template $this */
+if(!Mage::helper("divvit_divvit")->isEnabled()) return;
+$_session = Mage::getSingleton('customer/session');
+$_queue = $_session->getData(Divvit_Divvit_Helper_Data::EVENT_QUEUE);
+?>
+<!-- Divvit -->
+<script type="text/javascript">
+//<![CDATA[
+!function(){var t=window.divvit=window.divvit||[];t.DV_VERSION="magento-1.2.0",t.init=function(t){var e=document.createElement("script");e.setAttribute("type","text/javascript"),e.setAttribute("async",!0),e.setAttribute("src","<?php echo Mage::helper('divvit_divvit')->getDivvitUrl('tag') ?>/tag.js?id="+t);var r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(e,r)},t.functions=["customer","pageview","cartAdd","cartRemove","cartUpdated","orderPlaced","nlSubscribed","dv"];for(var e=0;e<t.functions.length;e++){var r=t.functions[e];t[r]=function(e){return function(){return Array.prototype.unshift.call(arguments,e),t.push(arguments),t}}(r)}}();
+
+divvit.init('<?php echo Mage::helper("divvit_divvit")->getMerchantSiteId() ?>');
+divvit.pageview();
+
+<?php if(Mage::getSingleton("customer/session")->isLoggedIn()): ?>
+divvit.customer({
+    customerId: "<?php echo Mage::getSingleton("customer/session")->getCustomerId() ?>"
+});
+<?php endif; ?>
+
+<?php /* Process Divvit Event Queue */ ?>
+<?php if (is_array($_queue) && !empty($_queue)): ?>
+<?php foreach ($_queue as $_event): ?>
+divvit.<?php echo $_event["type"] ?>(<?php echo $_event["json"] ?>);
+<?php endforeach; ?>
+<?php $_session->setData(Divvit_Divvit_Helper_Data::EVENT_QUEUE, []);?>
+<?php endif; ?>
+//]]>
+</script>
